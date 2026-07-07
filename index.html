@@ -1,1 +1,284 @@
-<p>Hello, world!</p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LittleKt 语言能力清单</title>
+    <style>
+        /* 纯黑白样式，无彩色 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: white;
+            color: black;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            page-break-after: avoid;
+        }
+        h1 {
+            font-size: 2rem;
+            border-bottom: 2px solid black;
+            padding-bottom: 0.3rem;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 1px solid #555;
+            padding-bottom: 0.2rem;
+        }
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 1.2rem;
+            font-weight: 600;
+        }
+        h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        ul, ol {
+            padding-left: 2rem;
+            margin: 0.5rem 0 1rem 0;
+        }
+        li {
+            margin-bottom: 0.2rem;
+        }
+        p {
+            margin: 0.5rem 0;
+        }
+        .status-supported {
+            font-weight: bold;
+            color: black;
+        }
+        .status-limited {
+            font-weight: bold;
+            color: black;
+        }
+        .status-unsupported {
+            font-weight: bold;
+            color: black;
+        }
+        .note {
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 0.8rem;
+            margin-top: 2rem;
+            color: #222;
+        }
+        hr {
+            border: 1px solid #aaa;
+            margin: 2rem 0;
+        }
+        .badge {
+            font-weight: normal;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+        .badge-ok::after {
+            content: " ✅ 支持";
+        }
+        .badge-ltd::after {
+            content: " ⚠️ 受限";
+        }
+        .badge-no::after {
+            content: " ❌ 不支持";
+        }
+        .badge-unknown::after {
+            content: " ❓ 未测试";
+        }
+        /* 打印优化 */
+        @media print {
+            body {
+                padding: 1.2rem;
+                font-size: 11pt;
+                line-height: 1.5;
+            }
+            h1 { font-size: 20pt; }
+            h2 { font-size: 16pt; }
+            h3 { font-size: 14pt; }
+            .badge { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>LittleKt 语言能力清单</h1>
+<p><em>基于 PyKt (Python 2 实现) 的测试验证，语言规范本身与宿主无关。</em></p>
+
+<!-- ==================== 基础语法 ==================== -->
+<h2>1. 基本语法结构</h2>
+
+<h3>1.1 函数</h3>
+<ul>
+    <li><strong>定义</strong>：<code>fun name(参数列表): 返回类型 { 语句块 }</code></li>
+    <li><strong>参数类型注解</strong>：必须显式指定（如 <code>n: Int</code>）<span class="badge badge-ok"></span></li>
+    <li><strong>单表达式简写</strong>：<code>fun add(a: Int, b: Int) = a + b</code> <span class="badge badge-ok"></span></li>
+    <li><strong>默认参数</strong>：<code>fun greet(name: String, greeting: String = "Hello")</code> <span class="badge badge-ok"></span></li>
+    <li><strong>泛型函数</strong>：<code>fun &lt;T&gt; identity(x: T): T</code> <span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>1.2 类</h3>
+<ul>
+    <li><strong>定义</strong>：<code>class Name(val prop: Type, var prop: Type) { ... }</code></li>
+    <li>构造参数必须带 <code>val</code>/<code>var</code> 及类型注解 <span class="badge badge-ok"></span></li>
+    <li>支持成员函数和属性 <span class="badge badge-ok"></span></li>
+    <li><strong>泛型类</strong>：<code>class Box&lt;T&gt;(val value: T)</code> <span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>1.3 变量</h3>
+<ul>
+    <li><strong>不可变</strong>：<code>val</code></li>
+    <li><strong>可变</strong>：<code>var</code></li>
+    <li>类型推断（根据初始化表达式推导）<span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>1.4 控制流</h3>
+<ul>
+    <li><strong><code>if</code> 表达式</strong>：可返回值的 <code>if</code>，支持 <code>else if</code> 链 <span class="badge badge-ok"></span>
+        <ul><li>所有分支类型必须一致 <span class="badge badge-ok"></span></li></ul>
+    </li>
+    <li>可用于赋值、返回、函数参数等任意表达式上下文 <span class="badge badge-ok"></span></li>
+</ul>
+
+<hr>
+
+<!-- ==================== 类型系统 ==================== -->
+<h2>2. 类型系统</h2>
+
+<h3>2.1 内置类型</h3>
+<ul>
+    <li><code>Int</code>, <code>String</code>, <code>Boolean</code>, <code>Double</code>, <code>Any</code>（根类型）<span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>2.2 泛型</h3>
+<ul>
+    <li><strong>泛型函数</strong>：<code>fun &lt;T&gt; foo(x: T): T</code> <span class="badge badge-ok"></span></li>
+    <li><strong>泛型类</strong>：<code>class Box&lt;T&gt;(val value: T)</code> <span class="badge badge-ok"></span></li>
+    <li><strong>泛型方法</strong>：成员函数可声明自己的类型参数 <code>&lt;U&gt;</code> <span class="badge badge-ok"></span></li>
+    <li><strong>类型推断</strong>：调用时可不指定类型参数（如 <code>Box(100)</code> 推断为 <code>Box&lt;Int&gt;</code>）<span class="badge badge-ok"></span></li>
+    <li><strong>定义时类型检查</strong>：返回类型与表达式类型不匹配时报错 <span class="badge badge-ok"></span></li>
+    <li><strong>嵌套泛型</strong>（如 <code>List&lt;List&lt;Int&gt;&gt;</code>）<span class="badge badge-ltd"></span> 解析可能受限</li>
+</ul>
+
+<h3>2.3 类型注解</h3>
+<ul>
+    <li>强制显式注解：参数、类属性、返回值（除非支持推断的局部变量 <code>val x = 10</code>）<span class="badge badge-ok"></span></li>
+</ul>
+
+<hr>
+
+<!-- ==================== Lambda 与高阶函数 ==================== -->
+<h2>3. Lambda 表达式与高阶函数</h2>
+
+<h3>3.1 Lambda 语法</h3>
+<ul>
+    <li><strong>多参数形式</strong>：<code>{ x, y -> x + y }</code>（参数无需显式类型注解）<span class="badge badge-ok"></span></li>
+    <li><strong>单参数隐式 <code>it</code></strong>：<code>{ it * it }</code> <span class="badge badge-ok"></span></li>
+    <li><strong>闭包</strong>：捕获外部变量（包括可变 <code>var</code>）<span class="badge badge-ok"></span></li>
+    <li><strong>参数显式类型注解</strong>：<code>{ x: Int -> x }</code> <span class="badge badge-no"></span> 未验证通过（可能不支持）</li>
+</ul>
+
+<h3>3.2 高阶函数</h3>
+<ul>
+    <li>Lambda 作为函数参数：<code>fun operate(a: Int, b: Int, op: (Int, Int) -> Int): Int</code> <span class="badge badge-ok"></span></li>
+    <li>Lambda 作为返回值：<code>fun multiplier(factor: Int): (Int) -> Int = { x -> x * factor }</code> <span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>3.3 集合高阶函数（标准库）</h3>
+<ul>
+    <li><code>List.map</code>, <code>List.filter</code>, <code>List.filterNotNull</code> <span class="badge badge-ok"></span></li>
+    <li><code>Map.mapKeys</code>（可能还有 <code>mapValues</code>）<span class="badge badge-ok"></span></li>
+</ul>
+
+<hr>
+
+<!-- ==================== 标准库 ==================== -->
+<h2>4. 标准库（内置集合与操作）</h2>
+
+<h3>4.1 数组（Array）</h3>
+<ul>
+    <li>创建：<code>arrayOf(vararg items)</code>、<code>arrayOfNulls(size)</code> <span class="badge badge-ok"></span></li>
+    <li>属性：<code>size</code> <span class="badge badge-ok"></span></li>
+    <li>索引访问：<code>arr.get(index)</code> 或 <code>arr[index]</code> <span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>4.2 列表（List）</h3>
+<ul>
+    <li>创建：<code>listOf(vararg items)</code> <span class="badge badge-ok"></span></li>
+    <li>属性：<code>size</code>, <code>isEmpty</code> <span class="badge badge-ok"></span></li>
+    <li>方法：<code>get(index)</code>, <code>contains(item)</code>, <code>indexOf(item)</code> <span class="badge badge-ok"></span></li>
+    <li>可变操作：<code>add(item)</code>, <code>removeAt(index)</code> <span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>4.3 映射（Map）</h3>
+<ul>
+    <li>创建：<code>mapOf(pair1, pair2, ...)</code>，pair 由 <code>to</code> 中缀创建（如 <code>"a" to 1</code>）<span class="badge badge-ok"></span></li>
+    <li>字面量：<code>["key" to value, ...]</code> <span class="badge badge-ok"></span></li>
+    <li>属性：<code>size</code>, <code>keys</code>, <code>values</code> <span class="badge badge-ok"></span></li>
+    <li>方法：<code>get(key)</code>, <code>containsKey(key)</code>, <code>put(key, value)</code>（可变）<span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>4.4 字符串（String）</h3>
+<ul>
+    <li><code>trim()</code>, <code>toUpperCase()</code>, <code>toLowerCase()</code> <span class="badge badge-ok"></span></li>
+    <li>属性：<code>length</code> <span class="badge badge-ok"></span></li>
+    <li><code>substring(start, end)</code>, <code>startsWith(prefix)</code>, <code>endsWith(suffix)</code>, <code>contains(sub)</code>, <code>replace(old, new)</code> <span class="badge badge-ok"></span></li>
+    <li>转换：<code>toIntOrNull()</code>, <code>toDoubleOrNull()</code> <span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>4.5 整数（Int）</h3>
+<ul>
+    <li><code>toString</code>（作为属性调用）<span class="badge badge-ok"></span></li>
+</ul>
+
+<hr>
+
+<!-- ==================== 语法糖 ==================== -->
+<h2>5. 语法糖与便捷特性</h2>
+
+<h3>5.1 字符串模板</h3>
+<ul>
+    <li>简单变量：<code>"Hello, $name"</code> <span class="badge badge-ok"></span></li>
+    <li>表达式：<code>"Sum: ${a + b}"</code>（基础支持）<span class="badge badge-ok"></span></li>
+</ul>
+
+<h3>5.2 注释</h3>
+<ul>
+    <li>行注释：<code>// ...</code> <span class="badge badge-ok"></span></li>
+    <li>块注释：<code>/* ... */</code> <span class="badge badge-ok"></span></li>
+</ul>
+
+<hr>
+
+<!-- ==================== 已知限制 ==================== -->
+<h2>6. 已知限制（语言层面未实现/待定）</h2>
+<ul>
+    <li>Lambda 参数的显式类型注解（如 <code>{ x: Int -> x }</code>）<span class="badge badge-no"></span></li>
+    <li>嵌套泛型类型（如 <code>List&lt;List&lt;Int&gt;&gt;</code>）<span class="badge badge-ltd"></span> 解析可能受限</li>
+    <li><code>when</code> 表达式 <span class="badge badge-unknown"></span></li>
+    <li>数据类（<code>data class</code>）<span class="badge badge-unknown"></span></li>
+    <li>解构声明 <span class="badge badge-unknown"></span></li>
+    <li>扩展函数/属性 <span class="badge badge-unknown"></span></li>
+    <li>协程 / 挂起函数 <span class="badge badge-unknown"></span></li>
+    <li>密封类 / 对象声明 / 单例 <span class="badge badge-unknown"></span></li>
+</ul>
+
+<div class="note">
+    <p><strong>说明</strong>：✅ 支持 — 已通过测试验证；⚠️ 受限 — 已知部分场景不支持；❌ 不支持 — 测试失败或未实现；❓ 未测试 — 尚未验证，可能支持或缺失。</p>
+    <p><strong>语言定位</strong>：LittleKt 是与宿主无关的通用语言，以上能力基于 PyKt (Python 2 实现) 的测试确认，未来其他实现（如 LittleKt-JVM、LittleKt-JS）应遵循相同的语言规范。</p>
+    <p><strong>版本信息</strong>：本文档基于 2026 年 7 月测试结果编写。</p>
+</div>
+
+</body>
+</html>
